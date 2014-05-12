@@ -31,7 +31,6 @@ import TestData._
  */
 class StringPsimitabInputStreamTest extends Suite {
 
-    //	@org.junit.Ignore
     @Test
     def test_loadData() = {
         val wrapper = new BufferedReader(new InputStreamReader(makeStream()));

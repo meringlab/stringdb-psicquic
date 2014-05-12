@@ -32,14 +32,12 @@ import org.scalatest.Suite
  */
 class PsimitabIntegrationTest extends Suite {
 
-    //	@org.junit.Ignore
     @Test
     def searchById() = {
         assertResults(runSearch("DRD2"), 1, "9606.ENSP00000347474");
         assertResults(runSearch("Su(z)2"), 1, "7227.CG3905-PA");
     }
 
-    //	@org.junit.Ignore
     @Test
     def searchBySpecies() = {
         assertResults(runSearch("homo sapiens"), 1, "9606.ENSP00000347474");

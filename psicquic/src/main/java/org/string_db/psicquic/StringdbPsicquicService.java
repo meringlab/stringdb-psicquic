@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import psidev.psi.mi.search.SearchResult;
 import psidev.psi.mi.search.engine.SearchEngine;
-import psidev.psi.mi.search.engine.impl.BinaryInteractionSearchEngine;
 import psidev.psi.mi.tab.converter.tab2xml.Tab2Xml;
 import psidev.psi.mi.tab.model.BinaryInteraction;
 import psidev.psi.mi.tab.model.builder.MitabDocumentDefinition;
@@ -65,50 +64,48 @@ public class StringdbPsicquicService implements PsicquicService {
             RETURN_TYPE_COUNT);
 
     @SuppressWarnings("unchecked")
-    private SearchEngine<BinaryInteraction> searchEngine;
+    private SearchEngine searchEngine;
 
-    Map<String, String> properties = new HashMap<String, String>();
+    final Map<String, String> properties = new HashMap<String, String>();
 
     public StringdbPsicquicService() {
+        logger.debug("creating");
         // XXX potential performance bottleneck
         BooleanQuery.setMaxClauseCount(200 * 1000);
 
-        properties = new HashMap<String, String>();
         properties.put("psicquic.spec.version", "1.1");
-        properties.put("psicquic.implementation.name", "string-db PSICQUIC Implementation");
+        properties.put("psicquic.implementation.name", "string-db 9 PSICQUIC Implementation");
         properties.put("psicquic.implementation.version", getVersion());
 
         try {
-            searchEngine = new BinaryInteractionSearchEngine(AppProperties.properties.indexDir);
+//            searchEngine = new BinaryInteractionSearchEngine(indexDir);
+            searchEngine = new StringBinaryInteractionSearchEngine(AppProperties.properties.indexDir.getAbsolutePath());
         } catch (IOException e) {
             logger.error("", e);
             throw new RuntimeException("Error creating SearchEngine using directory: " + AppProperties.properties.indexDir, e);
         }
     }
 
-    public QueryResponse getByInteractor(DbRef dbRef, RequestInfo requestInfo) throws NotSupportedMethodException,
-            NotSupportedTypeException, PsicquicServiceException {
+    public QueryResponse getByInteractor(DbRef dbRef, RequestInfo requestInfo) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
         String query = createQuery("identifiers", dbRef);
 
         return getByQuery(query, requestInfo);
     }
 
-    public QueryResponse getByInteraction(DbRef dbRef, RequestInfo requestInfo) throws NotSupportedMethodException,
-            NotSupportedTypeException, PsicquicServiceException {
+
+    public QueryResponse getByInteraction(DbRef dbRef, RequestInfo requestInfo) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
         String query = createQuery("interaction_id", dbRef);
 
         return getByQuery(query, requestInfo);
     }
 
-    public QueryResponse getByInteractorList(List<DbRef> dbRefs, RequestInfo requestInfo, String operand)
-            throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
+    public QueryResponse getByInteractorList(List<DbRef> dbRefs, RequestInfo requestInfo, String operand) throws NotSupportedMethodException, NotSupportedTypeException, PsicquicServiceException {
         String query = createQuery("identifiers", dbRefs, operand);
 
         return getByQuery(query, requestInfo);
     }
 
-    public QueryResponse getByInteractionList(List<DbRef> dbRefs, RequestInfo requestInfo)
-            throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
+    public QueryResponse getByInteractionList(List<DbRef> dbRefs, RequestInfo requestInfo) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
         String query = createQuery("interaction_id", dbRefs, "OR");
 
         return getByQuery(query, requestInfo);
@@ -188,7 +185,7 @@ public class StringdbPsicquicService implements PsicquicService {
     }
 
     public List<String> getSupportedDbAcs() {
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     public String getProperty(String propertyName) {
@@ -208,21 +205,19 @@ public class StringdbPsicquicService implements PsicquicService {
         return props;
     }
 
-    protected ResultSet createResultSet(String query, SearchResult searchResult, RequestInfo requestInfo)
-            throws PsicquicServiceException, NotSupportedTypeException {
+    protected ResultSet createResultSet(String query, SearchResult searchResult, RequestInfo requestInfo) throws PsicquicServiceException,
+            NotSupportedTypeException {
         ResultSet resultSet = new ResultSet();
 
         String resultType = (requestInfo.getResultType() != null) ? requestInfo.getResultType() : RETURN_TYPE_DEFAULT;
 
         if (RETURN_TYPE_MITAB25.equals(resultType)) {
-            if (logger.isDebugEnabled())
-                logger.debug("Creating PSI-MI TAB");
+//            if (logger.isDebugEnabled()) logger.debug("Creating PSI-MI TAB");
 
             String mitab = createMitabResults(searchResult);
             resultSet.setMitab(mitab);
         } else if (RETURN_TYPE_XML25.equals(resultType)) {
-            if (logger.isDebugEnabled())
-                logger.debug("Creating PSI-MI XML");
+//            if (logger.isDebugEnabled()) logger.debug("Creating PSI-MI XML");
 
             EntrySet jEntrySet = createEntrySet(searchResult);
             resultSet.setEntrySet(jEntrySet);
@@ -241,14 +236,11 @@ public class StringdbPsicquicService implements PsicquicService {
                 attr2.setValue("Total results found: " + searchResult.getTotalCount());
                 attrList.getAttributes().add(attr2);
 
-                // add warning if the batch size requested is higher than the
-                // maximum allowed
+                // add warning if the batch size requested is higher than the maximum allowed
                 if (requestInfo.getBlockSize() > BLOCKSIZE_MAX && BLOCKSIZE_MAX < searchResult.getTotalCount()) {
                     Attribute attrWarning = new Attribute();
-                    attrWarning.setValue("Warning: The requested block size (" + requestInfo.getBlockSize()
-                            + ") was higher than the maximum allowed (" + BLOCKSIZE_MAX + ") by PSICQUIC the service. "
-                            + BLOCKSIZE_MAX + " results were returned from a total found of "
-                            + searchResult.getTotalCount());
+                    attrWarning.setValue("Warning: The requested block size (" + requestInfo.getBlockSize() + ") was higher than the maximum allowed (" + BLOCKSIZE_MAX + ") by PSICQUIC the service. " +
+                            BLOCKSIZE_MAX + " results were returned from a total found of " + searchResult.getTotalCount());
                     attrList.getAttributes().add(attrWarning);
 
                 }
@@ -257,12 +249,12 @@ public class StringdbPsicquicService implements PsicquicService {
             }
 
         } else if (RETURN_TYPE_COUNT.equals(resultType)) {
-            if (logger.isDebugEnabled())
+            if (logger.isDebugEnabled()) {
                 logger.debug("Count query");
+            }
             // nothing to be done here
         } else {
-            throw new NotSupportedTypeException("Not supported return type: " + resultType + " - Supported types are: "
-                    + getSupportedReturnTypes());
+            throw new NotSupportedTypeException("Not supported return type: " + resultType + " - Supported types are: " + getSupportedReturnTypes());
         }
 
         return resultSet;

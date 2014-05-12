@@ -1,4 +1,14 @@
-The official http://string-db.org PSICQUIC implementation. 
+The official http://string-db.org PSICQUIC implementation.
+
+Important note
+
+The STRING-DB PSICQUIC API provides just a subset of all data available through the STRING-DB's API
+string-db.org/version_9_0/newstring_cgi/show_info_page.pl?page=api.html:
+
+    * only the 'core' species are available through PSICQUIC API (417 out of 1133)
+    * each STRING-DB evidence channel is reported as a separate interaction in PSICQUIC
+    * only interactions with score > 400 are available
+
 
 Howto setup development environment
 
@@ -8,13 +18,13 @@ To debug:
  
  mvn [clean] jetty:run
  
- http://localhost:8080/psicquic/webservices/v1.0/search/query/species:human?firstResult=0&maxResults=100
+ http://localhost:8080/psicquic/webservices/v1.1/search/query/species:human?firstResult=0&maxResults=100
  http://localhost:8080/psicquic/webservices
 
 To index:
 
 nohup  MAVEN_OPTS=" -Xmx2059m " mvn -PcreateIndex clean compile
-# can take a lot of time, ~30hrs! 
+# can take a lot of time, ~60hrs!
 
 
 

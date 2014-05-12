@@ -17,12 +17,14 @@
  */
 package org.string_db.psicquic.index;
 
+import ch.uzh.molbio.common.db.DBException;
 import ch.uzh.molbio.common.db.PostgresConnector;
 import org.apache.log4j.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,19 +50,18 @@ class DatabaseManager {
 
     MitabRecordBuilder rowBuilder;
     final DbUtil util = new DbUtil();
+    private Integer spcId;
+    private Map<String, String> setsCollections;
+    private Map<Integer, String> uniprotIds;
 
-    final String scoresQuery = "SELECT d.protein_id_a, d.protein_id_b, d.species_id,  d.combined_score,"
-            + "       d.equiv_nscore, d.equiv_nscore_transferred, d.equiv_fscore, d.equiv_pscore, d.equiv_hscore,"
-            + "       d.array_score, d.array_score_transferred, d.experimental_score, d.experimental_score_transferred, "
-            + "       d.database_score, d.database_score_transferred, d.textmining_score, d.textmining_score_transferred "
-            + " FROM  network.protein_protein_links d, items.species s "
-            + "  WHERE s.species_id = d.species_id AND s.type ='core'  AND d.combined_score >= 400 "
+    final String scoresQuery = "SELECT d.node_id_a, d.node_id_b, d.node_type_b, d.combined_score, d.evidence_scores"
+            + " FROM  network.node_node_links d, items.species s "
+            + "  WHERE s.species_id = d.node_type_b AND s.type ='core'  AND d.combined_score >= 400 "
             /*
-             * this table is symmetrical but we only need one half since
-			 * psicuqic will expand queries to both ids:
-			 */
-            + "    AND d.protein_id_a < d.protein_id_b "
-            + " and d.species_id = ";
+                * this table is symmetrical but we only need one half since
+                * psicuqic will expand queries to both ids:
+                */
+            + "    AND d.node_id_a < d.node_id_b AND d.node_type_b = ";
 
     DatabaseManager() {
         //for testing
@@ -68,9 +69,20 @@ class DatabaseManager {
 
     DatabaseManager(PostgresConnector db, Integer spcId, Map<String, String> setsCollections, Map<Integer, String> uniprotIds) {
         this.db = db;
+        this.spcId = spcId;
+        this.setsCollections = setsCollections;
+        this.uniprotIds = uniprotIds;
+    }
+
+
+    private synchronized void init() {
+        if (rs != null) {
+            return;
+        }
         try {
+            Map<Integer, List<String>> refseqIds = loadRefseqIds();
             rowBuilder = new MitabRecordBuilder(db, util.loadProteins(db, spcId), util.loadSpecies(db),
-                    util.loadProteinsSets(db, spcId), setsCollections, uniprotIds);
+                    util.loadProteinsSets(db, spcId), setsCollections, uniprotIds, refseqIds);
             log.info("init scores cursor");
             this.rs = db.getCursorBasedResultSet(scoresQuery + spcId, FETCH_SIZE);
             log.info("done");
@@ -98,26 +110,92 @@ class DatabaseManager {
         if (!bf.isEmpty()) {
             return;
         }
+        init();
         try {
             while (bf.isEmpty()) {
-                if (!rs.next()) {
+                if (rs.next() == false) {
                     log.info("no more data, records retrieved: " + rowCounter);
                     return;
                 }
                 if (++rowCounter % 10000 == 0) {
                     log.info(rowCounter + ". record read");
                 }
-                buffer.addAll(rowBuilder.makeMitabRecords(rs.getInt(1), rs.getInt(2), rs.getInt(3),
 
-                        rs.getInt(5), rs.getInt(6), rs.getInt(7), rs.getInt(8), /*
-																		 * ignore
-																		 * homology
-																		 */rs.getInt(10), rs.getInt(11), rs.getInt(12),
-                        rs.getInt(13), rs.getInt(14), rs.getInt(15), rs.getInt(16), rs.getInt(17)));
+                // unpack scores
+                int score_neighb = 0, score_neighb_tr = 0, score_fusion = 0, score_cooccurrence = 0, score_coexpresion = 0,
+                        score_coexpression_tr = 0, score_experimental = 0, score_experimental_tr = 0, score_database = 0,
+                        score_database_tr = 0, score_textmining = 0, score_textmining_tr = 0;
+
+                Integer[][] scores = (Integer[][]) rs.getArray(5).getArray();
+                for (Integer[] score : scores) {
+                    switch (score[0]) {
+                        case 1:
+                            score_neighb = score[1];
+                            break;
+                        case 2:
+                            score_neighb_tr = score[1];
+                            break;
+                        case 3:
+                            score_fusion = score[1];
+                            break;
+                        case 4:
+                            score_cooccurrence = score[1];
+                            break;
+                        case 5:
+                            /*ignore homology */
+                            break;
+                        case 6:
+                            score_coexpresion = score[1];
+                            break;
+                        case 7:
+                            score_coexpression_tr = score[1];
+                            break;
+                        case 8:
+                            score_experimental = score[1];
+                            break;
+                        case 9:
+                            score_experimental_tr = score[1];
+                            break;
+                        case 10:
+                            score_database = score[1];
+
+                            break;
+                        case 11:
+                            score_database_tr = score[1];
+                            break;
+                        case 12:
+                            score_textmining = score[1];
+                            break;
+                        case 13:
+                            score_textmining_tr = score[1];
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                buffer.addAll(rowBuilder.makeMitabRecords(rs.getInt(1), rs.getInt(2), rs.getInt(3), rs.getInt(4),
+                        score_neighb, score_neighb_tr, score_fusion, score_cooccurrence, score_coexpresion,
+                        score_coexpression_tr, score_experimental, score_experimental_tr, score_database,
+                        score_database_tr, score_textmining, score_textmining_tr));
+
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    protected Map<Integer, List<String>> loadRefseqIds() throws DBException, SQLException {
+        Map<Integer, List<String>> r = new HashMap();
+        ResultSet resultSet = db.execute("select protein_id, protein_name from items.proteins_names where species_id = " + spcId +
+                "        and source = 'Ensembl_RefSeq';");
+        while (resultSet.next()) {
+            if (!r.containsKey(resultSet.getInt(1))) {
+                r.put(resultSet.getInt(1), new ArrayList<String>());
+            }
+            r.get(resultSet.getInt(1)).add(resultSet.getString(2));
+        }
+        return r;
     }
 
 

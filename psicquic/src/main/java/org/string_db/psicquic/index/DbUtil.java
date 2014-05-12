@@ -32,6 +32,12 @@ import java.util.Set;
 class DbUtil {
     private static final Logger log = Logger.getLogger(DbUtil.class);
 
+    /**
+     * @param db
+     * @param spcId
+     * @return {id -> {external_id, name}} map
+     * @throws Exception
+     */
     Map<Integer, Pair<String, String>> loadProteins(PostgresConnector db, Integer spcId) throws Exception {
         log.info("loading proteins");
         Map<Integer, Pair<String, String>> res = new HashMap<Integer, Pair<String, String>>();

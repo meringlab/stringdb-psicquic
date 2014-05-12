@@ -53,6 +53,7 @@ class MitabRecordBuilder {
     final Map<Integer, Pair<Integer, String>> species;
     final Map<Evidence, EvidenceMitabExporter> exporters = new HashMap<Evidence, EvidenceMitabExporter>();
     final Map<Integer, String> stringUniprotIds;
+    private Map<Integer, List<String>> refseqIds;
 
     final Map<String, String> collections = new HashMap<String, String>();
     final Map<String, String> srcDbsNames = new HashMap<String, String>();
@@ -64,32 +65,33 @@ class MitabRecordBuilder {
 
     MitabRecordBuilder(PostgresConnector dbcon, Map<Integer, Pair<String, String>> proteins,
                        Map<Integer, Pair<Integer, String>> species, final Map<Integer, Set<String>> ps,
-                       final Map<String, String> sc, final Map<Integer, String> uniprotIds) {
+                       final Map<String, String> sc, final Map<Integer, String> uniprotIds, Map<Integer, List<String>> refseqIds) {
         this.db = dbcon;
         this.proteins = proteins;
         this.species = species;
         this.proteinsSets = ps;
         this.setsCollections = sc;
         this.stringUniprotIds = uniprotIds;
+        this.refseqIds = refseqIds;
         /*
-         * <pre>
-		  bind: http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0462
-		  biocarta: 
-		  biocyc: 
-		  dip:   http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0444 
-		  pdb:   http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0460 
-		  grid:  http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0463 
-		  hprd:  http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0468 
-		  intact:http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0469 
-		  kegg:  http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0470 
-		  mint:  http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0471 
-		  GO_complexes: http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0448 
-		  PID ???
-		  reactome: http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0467
-		  </pre>
-		 */
+           * <pre>
+            bind: http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0462
+            biocarta: http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A1108
+            biocyc:   http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A1105
+            dip:   http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0465
+            pdb:   http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0460
+            grid:  http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0463
+            hprd:  http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0468
+            intact:http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0469
+            kegg:  http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0470
+            mint:  http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0471
+            GO_complexes: http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0448
+            PID http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A1107
+            reactome: http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0467
+            </pre>
+           */
         collections.put("bind", "psi-mi:\"MI:0462\"(bind)");
-        collections.put("dip", "psi-mi:\"MI:0444\"(dip)");
+        collections.put("dip", "psi-mi:\"MI:0465\"(dip)");
         collections.put("pdb", "psi-mi:\"MI:0460\"(pdb)");
         collections.put("grid", "psi-mi:\"MI:0463\"(grid)");
         collections.put("hprd", "psi-mi:\"MI:0468\"(hprd)");
@@ -98,16 +100,21 @@ class MitabRecordBuilder {
         collections.put("mint", "psi-mi:\"MI:0471\"(mint)");
         collections.put("GO_complexes", "psi-mi:\"MI:0448\"(go_complexes)");
         collections.put("reactome", "psi-mi:\"MI:0467\"(reactome)");
-        // collections.put("biocarta", "psi-mi:\"\"");
-        // collections.put("biocyc", "psi-mi:\"\"");
+
+        collections.put("biocarta", "psi-mi:\"MI:1108\"(biocarta)");
+        collections.put("biocyc", "psi-mi:\"MI:1105\"(biocyc)");
+        collections.put("pid", "psi-mi:\"MI:1107\"(pid)");
 
         srcDbsNames.put("bind", "bind");
+        srcDbsNames.put("biocarta", "biocarta");
+        srcDbsNames.put("biocyc", "biocarta");
         srcDbsNames.put("dip", "dip");
         srcDbsNames.put("pdb", "pdb");
         srcDbsNames.put("grid", "grid");
         srcDbsNames.put("hprd", "hprd");
         srcDbsNames.put("intact", "intact");
         srcDbsNames.put("kegg_pathways", "kegg");
+        srcDbsNames.put("PID", "pid");
         srcDbsNames.put("mint", "mint");
         srcDbsNames.put("GO_complexes", "go");
         srcDbsNames.put("reactome", "reactome");
@@ -119,7 +126,7 @@ class MitabRecordBuilder {
                                     + " where p1.protein_id = ? and p2.protein_id= ? "
                                     + " and p1.abstract_id = p2.abstract_id limit 3");
             selectSetPubmedrefStatement = db.getConnection().prepareStatement(
-                    "select pubmed_id  from evidence.sets_pubmedrefs where set_id = ?");
+                    "select DISTINCT(pubmed_id)  from evidence.sets_pubmedrefs where set_id = ?");
 
         } catch (Exception e1) {
             throw new ExceptionInInitializerError(e1);
@@ -276,7 +283,7 @@ class MitabRecordBuilder {
 
     }
 
-    Collection<String> makeMitabRecords(Integer idA, Integer idB, int taxon,
+    Collection<String> makeMitabRecords(Integer idA, Integer idB, int taxon, int combined,
                                         int score_neighb, int score_neighb_tr, int score_fusion, int score_cooccurrence, int score_coexpresion,
                                         int score_coexpression_tr, int score_experimental, int score_experimental_tr, int score_database,
                                         int score_database_tr, int score_textmining, int score_textmining_tr) {
@@ -284,33 +291,55 @@ class MitabRecordBuilder {
             throw new IllegalArgumentException("non existing protein/species: " + idA + " / " + idB + " / " + taxon);
         }
         StringBuilder row = new StringBuilder(512);
-        // TODO use uniprot ids
         // interactor A
         row.append("string:");
-        row.append(this.proteins.get(idA).getX() + "\t");
+        row.append(this.proteins.get(idA).getX());
+        if (stringUniprotIds.containsKey(idA)) {
+            row.append("|uniprotkb:").append(stringUniprotIds.get(idA));
+        }
+
+        row.append("\t");
         // interactor B
         row.append("string:");
-        row.append(this.proteins.get(idB).getX() + "\t");
-
-        // interactor A - alternative identifier
-
-        if (stringUniprotIds.containsKey(idA)) {
-            row.append("uniprotkb:").append(stringUniprotIds.get(idA)).append("|");
-        }
-
-        // escape names in case they contain search engine keywards:
-        row.append("string:\"");
-        row.append(this.proteins.get(idA).getY() + "\"\t");
-        // interactor b - alternative identifier
+        row.append(this.proteins.get(idB).getX());
         if (stringUniprotIds.containsKey(idB)) {
-            row.append("uniprotkb:").append(stringUniprotIds.get(idB)).append("|");
+            row.append("|uniprotkb:").append(stringUniprotIds.get(idB));
         }
-        row.append("string:\"");
-        row.append(this.proteins.get(idB).getY() + "\"\t");
+        row.append("\t");
+
+        // interactor A, B - alternative identifiers, refseq
+        // @see https://docs.google.com/document/pub?id=11HpddNs-Bt5a4KOPGCXWivJ4MROYFbY2nhpk4PkvbTA
+        if (refseqIds.containsKey(idA) && !refseqIds.get(idA).isEmpty()) {
+
+            for (Iterator<String> iterator = refseqIds.get(idA).iterator(); iterator.hasNext(); ) {
+                row.append("refseq:").append(iterator.next());
+                if (iterator.hasNext()) {
+                    row.append("|");
+                }
+            }
+        } else {
+            row.append("-");
+        }
+        row.append("\t");
+
+        if (refseqIds.containsKey(idB) && !refseqIds.get(idB).isEmpty()) {
+            for (Iterator<String> iterator = refseqIds.get(idB).iterator(); iterator.hasNext(); ) {
+                row.append("refseq:").append(iterator.next());
+                if (iterator.hasNext()) {
+                    row.append("|");
+                }
+            }
+        } else {
+            row.append("-");
+        }
+        row.append("\t");
 
         List<String> records = new ArrayList<String>();
         // aliases A, aliases B
-        row.append("-\t-\t");
+        // escape names in case they contain search engine keywards:
+        row.append("string:\"").append(this.proteins.get(idA).getY()).append("\"\t");
+        row.append("string:\"").append(this.proteins.get(idB).getY()).append("\"\t");
+
         // taxon for A and B is the same
         String spc = "taxid:" + taxon + "(" + this.species.get(taxon).getY() + ")\t";
 
@@ -351,11 +380,18 @@ class MitabRecordBuilder {
         }
         if (score_neighb_tr > 0 || score_coexpression_tr > 0 || score_experimental_tr > 0 || score_database_tr > 0
                 || score_textmining_tr > 0) {
-            int score = (int) (1000 * (1.0d - (1.0d - score_coexpression_tr / 1000.0d)
-                    * (1.0d - score_neighb_tr / 1000.0d) * (1.0d - score_database_tr)
-                    * (1.0d - score_experimental_tr / 1000.0d) * (1.0d - score_textmining_tr / 1000.0d)));
-            assert (score <= 1000);
-            records.add(row.toString() + exporters.get(Evidence.TRANSFERRED).export(idA, idB, spc, linkout, score));
+            int score = (int)
+                    (1000 *
+                            (1.0d -
+                                    (1.0d - score_coexpression_tr / 1000.0d)
+                                            * (1.0d - score_database_tr / 1000.0d)
+                                            * (1.0d - score_experimental_tr / 1000.0d)
+                                            * (1.0d - score_textmining_tr / 1000.0d)));
+            if (score > 1000) {
+                log.error("illegal score for: " + idA + "-" + idB + ", transferred score: " + score);
+            } else {
+                records.add(row.toString() + exporters.get(Evidence.TRANSFERRED).export(idA, idB, spc, linkout, score));
+            }
         }
 
         return records;
@@ -365,7 +401,7 @@ class MitabRecordBuilder {
     private String exportImported(Integer idA, Integer idB, String taxon, int score, String miTerm) {
 
         if (!proteinsSets.containsKey(idA) || !proteinsSets.containsKey(idB)) {
-            log.warn("no set for: " + idA + " " + idB);
+            log.warn("no set for: " + idA + " " + idB + ", miterm: " + miTerm);
             return null;
         }
         // source databases, interaction identifier(s)
@@ -374,34 +410,59 @@ class MitabRecordBuilder {
                 if (proteinsSets.get(idB).contains(set)) {
                     String collection = setsCollections.get(set);
                     if (collections.containsKey(collection)) {
+                        StringBuilder sb = new StringBuilder();
+                        //Interaction detection methods, from:
+                        //http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI&termId=MI:0001&termName=interaction%20detection%20method
+                        sb.append(miTerm);
+                        // first author - should be obtained from the source db
+                        sb.append("-\t");
+                        // pubmed id - from evidence.sets_pubmedrefs
                         selectSetPubmedrefStatement.setString(1, set);
                         ResultSet rs = selectSetPubmedrefStatement.executeQuery();
+                        //there can be more than one pubmed, this might not give reproducible results
+                        boolean pubmedAdded = false;
                         if (rs.next()) {
-                            StringBuilder sb = new StringBuilder();
-                            sb.append(miTerm);
-                            // first author - should be obtained from the source
-                            // db
-                            sb.append("-\t");
-                            // pubmed id - from evidence.sets_pubmedrefs
-                            sb.append("pubmed:").append(rs.getString(1)).append("\t");
-
-                            sb.append(taxon).append(taxon);
-                            // interaction types - should be obtained from the
-                            // source db
-                            sb.append("-\t");
-                            sb.append(collections.get(collection)).append("\t");
-                            if (!set.contains(":")) {
-                                sb.append(srcDbsNames.get(collection)).append(":");
+                            if (rs.getString(1).startsWith("PMID0")) {
+                                sb.append("pubmed:").append(rs.getString(1).substring(5));
+                                pubmedAdded = true;
                             }
-                            sb.append(set).append("\t");
-                            sb.append("score:").append(score).append("\n");
-                            return sb.toString();
+                            while (rs.next()) {
+                                if (rs.getString(1).startsWith("PMID0")) {
+                                    if (pubmedAdded) {
+                                        sb.append("|");
+                                    }
+                                    sb.append("pubmed:").append(rs.getString(1).substring(5));
+                                    pubmedAdded = true;
+                                }
+                            }
+
                         }
+                        if (!pubmedAdded) {
+                            sb.append("-");
+                        }
+                        sb.append("\t");
+
+                        // taxonomy
+                        sb.append(taxon).append(taxon);
+                        // interaction types - should be obtained from the
+                        // source db
+                        sb.append("-\t");
+                        sb.append(collections.get(collection)).append("\t");
+                        if (!set.contains(":")) {
+                            sb.append(srcDbsNames.get(collection)).append(":");
+                        }
+                        sb.append(set).append("\t");
+                        sb.append("score:").append(score).append("\n");
+
+                        return sb.toString();
                     }
                 }
             }
         } catch (Exception e) {
             log.warn(e);
+        }
+        if (!miTerm.contains("MI:0364")) {
+            log.warn("no evidence for: " + idA + " " + idB + ", miterm: " + miTerm);
         }
         return null;
     }

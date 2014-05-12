@@ -5,10 +5,10 @@
     <groupId>org.string-db</groupId>
     <artifactId>parent-stringdb-psicquic</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>2.0</version>
     <name>parent stringdb psicquic</name>
     <url>http://string-db.org/psicquic/</url>
-    <description>http://string-db.org v8.3 PSICQUIC Reference WS Implementation</description>
+    <description>http://string-db.org v9.0 PSICQUIC Reference WS Implementation</description>
 
     <scm>
         <connection>scm:git:https://bitbucket.org/milan/psicquic.git</connection>
@@ -46,26 +46,9 @@
 
         <!-- EBI repository -->
         <repository>
-            <id>ebi-repo</id>
-            <name>The EBI internal repository</name>
-            <url>http://www.ebi.ac.uk/~maven/m2repo</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>ebi-repo-snapshots</id>
-            <name>The EBI internal repository</name>
-            <url>http://www.ebi.ac.uk/~maven/m2repo_snapshots</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>intact.nexus</id>
+            <name>IntAct Nexus</name>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/groups/public</url>
         </repository>
 
         <!-- for jaxb-impl -->
@@ -94,6 +77,11 @@
     </repositories>
 
     <pluginRepositories>
+        <pluginRepository>
+            <id>intact.nexus</id>
+            <name>IntAct Nexus</name>
+            <url>http://www.ebi.ac.uk/intact/maven/nexus/content/groups/public</url>
+        </pluginRepository>
         <pluginRepository>
             <id>maven2-repository.dev.java.net</id>
             <name>Java.net Repository for Maven</name>

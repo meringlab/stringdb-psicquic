@@ -1,6 +1,5 @@
 /**
  * Copyright 2008 The European Bioinformatics Institute, and others.
-
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +24,11 @@ import javax.ws.rs.*;
 /**
  * RESTful web service.
  * <p/>
- * v.1.0/search/query/brca2
+ * v.1.1/search/query/brca2
  * current/search/query/species:human?format=xml25&firstResult=50&maxResults=100
  *
  * @author Bruno Aranda (baranda@ebi.ac.uk)
- * @version r256
+ * @version $Id: IntactPsicquicService.java 12873 2009-03-18 02:51:31Z baranda $
  */
 @Path("/search")
 public interface PsicquicRestService {

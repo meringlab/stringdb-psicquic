@@ -4,14 +4,14 @@
     <parent>
         <artifactId>parent-stringdb-psicquic</artifactId>
         <groupId>org.string-db</groupId>
-        <version>1.0</version>
+        <version>2.0</version>
     </parent>
     <artifactId>psicquic</artifactId>
-    <version>1.0</version>
+    <version>2.0</version>
     <packaging>war</packaging>
 
     <name>string-psicquic</name>
-    <description>Based on uk.ac.ebi.intact.service.psicquic::psicquic-ws::1.1.7</description>
+    <description>Based on uk.ac.ebi.intact.service.psicquic::psicquic-ws::1.1.9</description>
 
     <properties>
         <cxf.version>2.2.3</cxf.version>
@@ -34,6 +34,14 @@
             </resource>
         </resources>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -201,7 +209,7 @@
                         <configuration>
                             <executable>java</executable>
                             <arguments>
-                                <argument>-Xmx1024m</argument>
+                                <argument>-Xmx2049m</argument>
                                 <argument>-classpath</argument>
                                 <classpath/>
                                 <argument>org.string_db.psicquic.index.MitabIndexer</argument>
@@ -309,7 +317,7 @@
         <dependency>
             <groupId>psidev.psi.mi</groupId>
             <artifactId>psimitab-search</artifactId>
-            <version>1.7.7</version>
+            <version>1.7.9</version>
         </dependency>
 
         <!-- RDF -->
@@ -446,14 +454,6 @@
 
         <!-- Tests -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.2</version>
-            <scope>test</scope>
-        </dependency>
-
-
-        <dependency>
             <groupId>org.scalatest</groupId>
             <artifactId>scalatest</artifactId>
             <version>1.2</version>
@@ -468,7 +468,6 @@
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
         </dependency>
-
     </dependencies>
 
     <repositories>

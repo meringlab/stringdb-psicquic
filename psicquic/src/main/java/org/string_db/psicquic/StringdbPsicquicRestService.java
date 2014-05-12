@@ -46,13 +46,16 @@ public class StringdbPsicquicRestService implements PsicquicRestService {
     private PsicquicService psicquicService;
 
     public StringdbPsicquicRestService() {
-        System.out.println("rest service");
+
     }
 
     public Object getByInteractor(String interactorAc, String db, String format, String firstResult, String maxResults)
             throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
-        String query = "id:" + createQueryValue(interactorAc, db) + " OR alias:" + createQueryValue(interactorAc, db);
+        String query = "identifier:" + createQueryValue(interactorAc, db);
         return getByQuery(query, format, firstResult, maxResults);
+        //TODO checkme, this used to be
+//		String query = "id:" + createQueryValue(interactorAc, db) + " OR alias:" + createQueryValue(interactorAc, db);
+//		return getByQuery(query, format, firstResult, maxResults);
     }
 
     public Object getByInteraction(String interactionAc, String db, String format, String firstResult, String maxResults)
@@ -61,8 +64,11 @@ public class StringdbPsicquicRestService implements PsicquicRestService {
         return getByQuery(query, format, firstResult, maxResults);
     }
 
-    public Object getByQuery(String query, String format, String firstResultStr, String maxResultsStr)
-            throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
+    public Object getByQuery(String query, String format,
+                             String firstResultStr,
+                             String maxResultsStr) throws PsicquicServiceException,
+            NotSupportedMethodException,
+            NotSupportedTypeException {
         int firstResult;
         int maxResults;
 
@@ -101,9 +107,7 @@ public class StringdbPsicquicRestService implements PsicquicRestService {
             } else if (format.toLowerCase().startsWith("rdf")) {
                 String rdfFormat = getRdfFormatName(format);
                 String mediaType = format.contains("xml") ? MediaType.APPLICATION_XML : MediaType.TEXT_PLAIN;
-                // RdfStreamingOutput streamingOutput =
-                // createRdfStreamingOutput(query, rdfFormat, firstResult,
-                // maxResults);
+                //RdfStreamingOutput streamingOutput = createRdfStreamingOutput(query, rdfFormat, firstResult, maxResults);
                 final RdfBuilder rdfBuilder = new RdfBuilder(develMode);
 
                 psidev.psi.mi.xml.model.EntrySet entrySet = createEntrySet(query, firstResult, maxResults);
@@ -124,12 +128,10 @@ public class StringdbPsicquicRestService implements PsicquicRestService {
             } else if (StringdbPsicquicService.RETURN_TYPE_COUNT.equalsIgnoreCase(format)) {
                 return count(query);
             } else if (strippedMime(StringdbPsicquicService.RETURN_TYPE_MITAB25_BIN).equalsIgnoreCase(format)) {
-                PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult,
-                        maxResults, true);
+                PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults, true);
                 return Response.status(200).type("application/x-gzip").entity(result).build();
-            } else if (strippedMime(StringdbPsicquicService.RETURN_TYPE_MITAB25).equalsIgnoreCase(format)) {
-                PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult,
-                        maxResults);
+            } else if (strippedMime(StringdbPsicquicService.RETURN_TYPE_MITAB25).equalsIgnoreCase(format) || format == null) {
+                PsicquicStreamingOutput result = new PsicquicStreamingOutput(psicquicService, query, firstResult, maxResults);
                 return Response.status(200).type(MediaType.TEXT_PLAIN).entity(result).build();
             } else {
                 return Response.status(406).type(MediaType.TEXT_PLAIN).entity("Format not supported").build();
@@ -137,6 +139,7 @@ public class StringdbPsicquicRestService implements PsicquicRestService {
         } catch (Throwable e) {
             throw new PsicquicServiceException("Problem creating output", e);
         }
+
 
     }
 
@@ -200,8 +203,9 @@ public class StringdbPsicquicRestService implements PsicquicRestService {
         return psicquicService.getVersion();
     }
 
-    public EntrySet getByQueryXml(String query, int firstResult, int maxResults) throws PsicquicServiceException,
-            NotSupportedMethodException, NotSupportedTypeException {
+    public EntrySet getByQueryXml(String query,
+                                  int firstResult,
+                                  int maxResults) throws PsicquicServiceException, NotSupportedMethodException, NotSupportedTypeException {
         RequestInfo reqInfo = new RequestInfo();
         reqInfo.setResultType("psi-mi/xml25");
 
@@ -222,8 +226,7 @@ public class StringdbPsicquicRestService implements PsicquicRestService {
         return response.getResultSet().getEntrySet();
     }
 
-    private int count(String query) throws NotSupportedTypeException, NotSupportedMethodException,
-            PsicquicServiceException {
+    private int count(String query) throws NotSupportedTypeException, NotSupportedMethodException, PsicquicServiceException {
         RequestInfo reqInfo = new RequestInfo();
         reqInfo.setResultType("count");
         QueryResponse response = psicquicService.getByQuery(query, reqInfo);
@@ -232,12 +235,13 @@ public class StringdbPsicquicRestService implements PsicquicRestService {
 
     private String createQueryValue(String interactorAc, String db) {
         StringBuilder sb = new StringBuilder(256);
-        if (db.length() > 0)
+        if (db.length() > 0) {
             sb.append('"').append(db).append(':');
+        }
         sb.append(interactorAc);
-        if (db.length() > 0)
+        if (db.length() > 0) {
             sb.append('"');
-
+        }
         return sb.toString();
     }
 

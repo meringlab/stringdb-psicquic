@@ -33,6 +33,11 @@ public final class AppProperties {
 
     private static final Logger logger = LoggerFactory.getLogger(AppProperties.class);
 
+    private static final String CONFIG_DIR = "/opt/stringdb/v9.0/";
+
+    public static final String UNIPROT_IDS = CONFIG_DIR + "string.uniprot.ids.txt";
+    public static final String HIBERNATE_PROPERTIES = CONFIG_DIR + "hibernate.properties";
+
     public static final AppProperties properties = new AppProperties();
 
     public final File indexDir;
@@ -40,7 +45,7 @@ public final class AppProperties {
     private AppProperties() {
         Properties props = new Properties();
         try {
-            final FileInputStream inStream = new FileInputStream("/opt/stringdb/v8.3/psicquic.properties");
+            final FileInputStream inStream = new FileInputStream("/opt/stringdb/v9.0/psicquic.properties");
             props.load(inStream);
             inStream.close();
         } catch (Exception e) {

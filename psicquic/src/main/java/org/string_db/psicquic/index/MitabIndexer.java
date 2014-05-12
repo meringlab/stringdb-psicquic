@@ -37,13 +37,12 @@ import java.util.*;
 public class MitabIndexer {
 
     private static final Logger log = Logger.getLogger(MitabIndexer.class);
-    public static final String CONFIG_DIR = "/opt/stringdb/v8.3/";
 
     public static void main(String[] args) throws Exception {
         long start = System.currentTimeMillis();
 
         PostgresConnector pg = openPostgresConnector();
-        Map<Integer, String> uniprotIds = loadUniprotIds(CONFIG_DIR + "string.uniprot.ids.txt");
+        Map<Integer, String> uniprotIds = loadUniprotIds(AppProperties.UNIPROT_IDS);
         DbUtil util = new DbUtil();
         List<Integer> species = loadCoreSpecies(pg);
         Map<String, String> setsCollections = util.loadSetsCollections(pg);
@@ -74,7 +73,7 @@ public class MitabIndexer {
 
     static PostgresConnector openPostgresConnector() throws IOException, DBException {
         Properties props = new Properties();
-        final FileInputStream inStream = new FileInputStream(CONFIG_DIR + "hibernate.properties");
+        final FileInputStream inStream = new FileInputStream(AppProperties.HIBERNATE_PROPERTIES);
         props.load(inStream);
         inStream.close();
 
