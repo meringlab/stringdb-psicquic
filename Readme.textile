@@ -1,0 +1,134 @@
+h1. The official "string-db.org":http://string-db.org "PSICQUIC":http://www.nature.com/nmeth/journal/v8/n7/full/nmeth.1637.html implementation.
+
+h2. Important note
+
+The STRING-DB PSICQUIC API is not equivalent/compatible with the "STRING-DB's API":http://string-db.org/version_9_1/newstring_cgi/show_info_page.pl?page=api.html :
+* it provides just a subset of all data available (only the _core_ species - 417 out of 1133 in v9.1), and only interactions with score > 400 are indexed)
+* each STRING-DB evidence channel is reported as a separate interaction (homology excluded, all transferred combined into one)
+
+h2. How to setup development environment
+
+* get JDK 1.7 and "Maven 3":http://maven.apache.org
+* download the "string.uniprot.ids.txt.gz":http://string.uzh.ch/download/public/string_9_1/string.uniprot.ids.txt.gz and uncompress into @/opt/stringdb/v9.1/@
+* edit @docs/jdbc-v1.0.properties.template@ and save at @/opt/stringdb/jdbc-v1.0.properties@
+* edit @docs/psicquic.properties.template@ and put under @/opt/stringdb/v9.1/psicquic.properties@
+* run @mvn generate-sources@ and add target/generated/java as a source folder
+
+h3. To try locally
+
+Run: @mvn -DskipTests=true -Pstart-jetty-solr package jetty:run@
+
+This will start jetty locally which can be accessed at
+"http://localhost:9090/psicquic/webservices/current/search/query/species:9606?firstResult=0&maxResults=10":http://localhost:9090/psicquic/webservices/current/search/query/species:9606?firstResult=0&maxResults=10
+
+h3. To index (will take days to finish..)
+
+Run: @MAVEN_OPTS=" -Xmx2559m " mvn -PcreateIndexWithSolrRunning install@
+
+
+h2. Mapping string-db data to PsiMitab
+
+This section explains how is string-db's database data converted to PsiMiTab format for indexing.
+The reference is "MITAB27Format":http://code.google.com/p/psicquic/wiki/MITAB27Format .
+
+|_. MiTab Column |_. Header |
+| 1&2. unique identifier| external_id and uniprotId |
+| 3&4. alternative identifiers | uniprot & refseq |
+| 5&6. aliases | preferred protein name |
+| 7. Interaction detection methods |<ul>
+    <li> textmining     "MI:0087"(predictive text mining)</li>
+    <li>    co-occurrence  "MI:0085"(phylogenetic profile)</li>
+    <li>    co-expressions "MI:0686"(unspecified method - coexpression)</li>
+    <li>    fusion         "MI:0036"(domain fusion)</li>
+    <li>    neighbourhood  "MI:0057"(gene neighbourhood)</li>
+    <li>    database       "MI:0362”(inferrence)             </li>
+    <li>    experimental   "MI:0045"(experimental interaction detection)</li>
+    <li>    transfers      "MI:0064"(interologs mapping)</li>
+ </ul> |
+| 8. First author   |  - |
+| 9. publication id |  - |
+| 10&11. NCBI tax ids | species id(name) |
+| 12. Interaction types | <ul>
+        <li>experimental "MI:0914"(association)</li>
+        <li>database     "MI:1110"(predicted interaction)</li>
+        <li>all other    "MI:1110"(predicted interaction)</li></ul> |
+| 13. source db | for experimental & database channels, map {protein_id -> collection_id} using evidence.sets_items and from evidence.sets, then map
+{collection_id -> miterm} as following:
+<ul> <li> bind: http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0462</li>
+<li> biocarta: http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A1108</li>
+<li> biocyc:   http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A1105</li>
+<li> dip:   http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0465</li>
+<li> pdb:   http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0460</li>
+<li> grid:  http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0463</li>
+<li> hprd:  http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0468</li>
+<li> intact:http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0469</li>
+<li> kegg:  http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0470</li>
+<li> mint:  http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0471</li>
+<li> GO_complexes: http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0448</li>
+<li> PID: http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A1107</li>
+<li> reactome: http://www.ebi.ac.uk/ontology-lookup/?termId=MI%3A0467</li>
+</ul>
+for all other channels: psi-mi:"MI:1014"(string) |
+| 14. interaction ID | we don’t have them |
+| 15. score | For non-transferred channels (except homology) its as reported in the database.
+    All transferred channels (except homology) - are combined into one score.
+    See "StringDbScores#getTransferredScore()":https://github.com/mbsimonovic/stringdb-jdbc/blob/master/src/main/java/org/string_db/StringDbScores.java#L221 for details. |
+| 16. Complex expansion| - |
+| 17 & 18. Biological roles | ID: MI:0499  (unspecified role), go to the source DB to find out |
+| 19&20. Experimental roles | ID: MI:0499  (unspecified role), go to the source DB to find out |
+| 21&22. Interactor types | ID: MI:0326 Name: protein |
+| 23&24. Xref for interactors | - |
+| 25. Xref for the interaction | - |
+| 26&27. Annotations for interactors | - |
+| 28&29 Annotations for the interaction| - |
+| 30. Host id | - |
+| 31. Creation date| - |
+| 32. Update date| - |
+| 33 & 34 Interactors checksums | ROGID |
+| 35. Interaction checksum | - |
+| 36. Negative interaction  | - |
+| 37 & 38. Features | - |
+| 39 & 40. Stoichiometry | - |
+| 41 & 42. Participant identification method| - |
+
+h2. TODO
+
+* 2014-05-13 12:30:19,459 [org.string_db.psicquic.index.StringdbSolrIndexer.main()] WARN  (SourceDbLookup,89) - no set for: 623803 633199
+
+
+h2. References
+
+* "PsimiTabFormat":http://code.google.com/p/psimi/wiki/PsimiTabFormat
+* "MI CV":http://www.ebi.ac.uk/ontology-lookup/browse.do?ontName=MI
+* "PSICQUIC Viewer":http://www.ebi.ac.uk/Tools/webservices/psicquic/view/main.xhtml
+* "PSICQUIC Registry":http://www.ebi.ac.uk/Tools/webservices/psicquic/registry/registry?action=STATUS
+
+h3. Solr cheat sheet
+
+@curl 'http://localhost/psicquic/update?pp=true' -H "Content-Type: text/xml" --data-binary '<rollback/>'@
+@curl 'http://localhost/psicquic/update?pp=true' -H "Content-Type: text/xml" --data-binary '<delete><query>*:*</query></delete>'@
+
+
+h2. Contact
+
+For any questions, comments, remarks, drop me an "email":mailto:milan.simonovic@imls.uzh.ch
+
+h1. License
+
+<pre>
+This software is licensed under the Apache 2 license, quoted below.
+
+Copyright 2014 University of Zürich, SIB, and others.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+</pre>
