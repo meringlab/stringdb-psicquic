@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.string-db</groupId>
+    <artifactId>parent-stringdb-psicquic</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0</version>
+    <name>parent stringdb psicquic</name>
+    <url>http://string-db.org/psicquic/</url>
+    <description>http://string-db.org v8.3 PSICQUIC Reference WS Implementation</description>
+
+    <scm>
+        <connection>scm:git:https://bitbucket.org/milan/psicquic.git</connection>
+        <url>https://bitbucket.org/milan/psicquic</url>
+    </scm>
+
+    <organization>
+        <name>University of Zurich, Institute of Molecular Biology</name>
+        <url>http://www.imls.uzh.ch/research/vonmering.html</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>milan</id>
+            <name>Milan Simonovic</name>
+            <email>milan.simonovic@imls.uzh.ch</email>
+            <organization>UZH</organization>
+            <organizationUrl>www.imls.uzh.ch/research/vonmering/people/milan-simonovic.html</organizationUrl>
+            <timezone>GMT+1</timezone>
+        </developer>
+    </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>vmering</id>
+            <name>vmering repository</name>
+            <url>http://imlslnx-titan.uzh.ch:8080/nexus/content/repositories/vmering</url>
+        </repository>
+
+
+        <!-- EBI repository -->
+        <repository>
+            <id>ebi-repo</id>
+            <name>The EBI internal repository</name>
+            <url>http://www.ebi.ac.uk/~maven/m2repo</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>ebi-repo-snapshots</id>
+            <name>The EBI internal repository</name>
+            <url>http://www.ebi.ac.uk/~maven/m2repo_snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- for jaxb-impl -->
+        <!--<repository>-->
+        <!--<id>java.net</id>-->
+        <!--<url>http://download.java.net/maven/1/</url>-->
+        <!--<layout>legacy</layout>-->
+        <!--</repository>-->
+
+        <repository>
+            <id>apache-incubating</id>
+            <url>http://people.apache.org/repo/m2-incubating-repository</url>
+        </repository>
+
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Snapshots Repository</name>
+            <url>http://repository.apache.org/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>maven2-repository.dev.java.net</id>
+            <name>Java.net Repository for Maven</name>
+            <url>http://download.java.net/maven/2/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>apache.snapshots</id>
+            <name>Apache Snapshots Repository</name>
+            <url>http://repository.apache.org/snapshots</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.3.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <modules>
+        <module>psicquic</module>
+    </modules>
+
+</project>
