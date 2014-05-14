@@ -23,7 +23,6 @@
         <property name="propertiesAsStrings" value="${psicquic.properties}"/>
         <property name="queryFilter" value="${psicquic.filter}"/>
         <property name="implementationName" value="STRING-DB Reference Implementation"/>
-        <property name="solrUrl" value="${solrUrl}"/>
         <property name="queryLogFileName" value="${log.file.name}"/>
     </bean>
 

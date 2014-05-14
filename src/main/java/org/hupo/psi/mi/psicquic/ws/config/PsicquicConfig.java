@@ -39,7 +39,6 @@ public class PsicquicConfig implements DisposableBean {
     private String propertiesAsStrings;
     private String queryFilter;
     private String implementationName;
-    private String solrUrl;
     private String queryLogFileName;
     private String proxyHost;
     private String proxyPort;
@@ -143,14 +142,6 @@ public class PsicquicConfig implements DisposableBean {
 
     public void setImplementationName(String implementationName) {
         this.implementationName = implementationName;
-    }
-
-    public String getSolrUrl() {
-        return solrUrl;
-    }
-
-    public void setSolrUrl(String solrUrl) {
-        this.solrUrl = solrUrl;
     }
 
     public String getQueryLogFileName() {

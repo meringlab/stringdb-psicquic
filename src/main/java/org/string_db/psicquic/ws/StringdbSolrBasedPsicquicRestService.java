@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.string_db.psicquic.AppProperties;
 import psidev.psi.mi.calimocho.solr.converter.SolrFieldName;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
 
@@ -333,7 +334,7 @@ public class StringdbSolrBasedPsicquicRestService implements PsicquicRestService
      */
     public synchronized PsicquicSolrServer getPsicquicSolrServer() {
         if (psicquicSolrServer == null) {
-            HttpSolrServer solrServer = new HttpSolrServer(config.getSolrUrl(), createHttpClient());
+            HttpSolrServer solrServer = new HttpSolrServer(AppProperties.instance.solrUrl, createHttpClient());
 
             solrServer.setConnectionTimeout(connectionTimeOut);
             solrServer.setSoTimeout(soTimeOut);

@@ -11,7 +11,7 @@ h2. How to setup development environment
 * get JDK 1.7 and "Maven 3":http://maven.apache.org
 * download the "string.uniprot.ids.txt.gz":http://string.uzh.ch/download/public/string_9_1/string.uniprot.ids.txt.gz and uncompress into @/opt/stringdb/v9.1/@
 * edit @docs/jdbc-v1.0.properties.template@ and save at @/opt/stringdb/jdbc-v1.0.properties@
-* edit @docs/psicquic.properties.template@ and put under @/opt/stringdb/v9.1/psicquic.properties@
+* edit @docs/psicquic.properties.template@ and put under @/opt/stringdb/v9.1/psicquic.properties@, but make sure it's in sync with @psicquic-indexing-spring-test.xml@
 * run @mvn generate-sources@ and add target/generated/java as a source folder
 
 h3. To try locally
