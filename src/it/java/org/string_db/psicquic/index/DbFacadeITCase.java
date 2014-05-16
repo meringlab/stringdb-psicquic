@@ -34,7 +34,7 @@ import static org.junit.Assert.*;
 /**
  * @author Milan Simonovic <milan.simonovic@imls.uzh.ch>
  */
-public class DbFacateITCase {
+public class DbFacadeITCase {
     private static final DbFacade dbUtil = new DbFacade(AppProperties.instance.getProteinRepository(), AppProperties.instance.getSpeciesRepository(), AppProperties.instance.getGenericQueryProcessor());
 
     @Test
