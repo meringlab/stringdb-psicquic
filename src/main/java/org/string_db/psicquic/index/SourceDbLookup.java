@@ -53,24 +53,46 @@ class SourceDbLookup {
 
     static {
         collections.put("bind", new Pair("MI:0462", "bind"));
-        collections.put("dip", new Pair("MI:0465", "dip"));
-        collections.put("pdb", new Pair("MI:0460", "pdb"));
-        collections.put("grid", new Pair("MI:0463", "grid"));
-        collections.put("hprd", new Pair("MI:0468", "hprd"));
-        collections.put("intact", new Pair("MI:0469", "intact"));
-        collections.put("kegg_pathways", new Pair("MI:0470", "kegg_pathways"));
-        collections.put("mint", new Pair("MI:0471", "mint"));
-        collections.put("GO_complexes", new Pair("MI:0448", "go_complexes"));
-        collections.put("reactome", new Pair("MI:0467", "reactome"));
         collections.put("biocarta", new Pair("MI:1108", "biocarta"));
         collections.put("biocyc", new Pair("MI:1105", "biocyc"));
-        collections.put("PID", new Pair("MI:1107", "pid"));
-        collections.put("gene_ontology", new Pair("MI:0448", "gene_ontology"));
-        collections.put("mpidb", new Pair("MI:0903", "mpidb"));
-        collections.put("rcsb_pdb", new Pair("MI:0460", "rcsb_pdb"));
         collections.put("brenda", new Pair("MI:0846", "brenda"));
+        collections.put("cell_ontology", new Pair("MI:0831", "cell_ontology"));
+        collections.put("chebi", new Pair("MI:0474", "chebi"));
+        collections.put("ChEBI", new Pair("MI:0474", "chebi"));
+        collections.put("chembl_compound", new Pair("MI:0967", "chembl_compound"));
+        collections.put("dip", new Pair("MI:0465", "dip"));
+        collections.put("emdb", new Pair("MI:0936", "emdb"));
+        collections.put("eMDB", new Pair("MI:0936", "emdb"));
+        collections.put("flannotator", new Pair("MI:1043", "flannotator"));
+        collections.put("gene_ontology", new Pair("MI:0448", "gene_ontology"));
+        collections.put("grid", new Pair("MI:0463", "grid"));
+        collections.put("GO_complexes", new Pair("MI:0448", "go_complexes"));
+        collections.put("hprd", new Pair("MI:0468", "hprd"));
+        collections.put("intact", new Pair("MI:0469", "intact"));
         collections.put("interpro", new Pair("MI:0449", "interpro"));
         collections.put("interPro", new Pair("MI:0449", "interpro"));
+        collections.put("kegg_pathways", new Pair("MI:0470", "kegg_pathways"));
+        collections.put("mint", new Pair("MI:0471", "mint"));
+        collections.put("mpidb", new Pair("MI:0903", "mpidb"));
+        collections.put("omim", new Pair("MI:0480", "omim"));
+        collections.put("OMIM", new Pair("MI:0480", "omim"));
+        collections.put("pdb", new Pair("MI:0460", "pdb"));
+        collections.put("pdbe", new Pair("MI:0460", "rcsb_pdb"));
+        collections.put("PID", new Pair("MI:1107", "pid"));
+        collections.put("pid", new Pair("MI:1107", "pid"));
+        collections.put("pmc", new Pair("MI:1042", "pmc"));
+        collections.put("PMC", new Pair("MI:1042", "pmc"));
+        collections.put("pride", new Pair("MI:0738", "pride"));
+        collections.put("PRIDE", new Pair("MI:0738", "pride"));
+        collections.put("reactome", new Pair("MI:0467", "reactome"));
+        collections.put("rcsb_pdb", new Pair("MI:0460", "rcsb_pdb"));
+        collections.put("uniprot", new Pair("MI:0486", "uniprot")); //todo check this one
+        collections.put("ww_pdb", new Pair("MI:0460", "pdb"));
+
+        /**
+         "efo";"''";"Experimental Factor Ontology"
+         "proteomexchange";"''";"Proteomexchange data, indirectly accessed via references in other databases, late 2014."
+         */
     }
 
 
