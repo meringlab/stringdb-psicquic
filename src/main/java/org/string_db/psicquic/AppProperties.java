@@ -43,8 +43,6 @@ public final class AppProperties {
 
     private static final String CONFIG_DIR = "/opt/stringdb/v9.1/";
 
-    public static final String UNIPROT_IDS = CONFIG_DIR + "string.uniprot.ids.txt";
-
     public static final AppProperties instance = new AppProperties();
 
     final ApplicationContext ctx;
