@@ -44,13 +44,13 @@ public class ConfidenceColumnBuilderTest {
             }
         });
         Map<EvidenceType, RowBuilder> rows = confidenceExporter.buildRowForEachEvidenceType(
-                StringDbScores.builder(1, 2).with(EvidenceType.NEIGHBOURHOOD, 1).with(EvidenceType.FUSION, 12)
-                        .with(EvidenceType.COOCCURRENCE, 44).with(EvidenceType.COEXPRESSION, 33).with(EvidenceType.TEXTMINING, 22).build()
+                StringDbScores.builder(1, 2).with(EvidenceType.NEIGHBOURHOOD, 441).with(EvidenceType.FUSION, 442)
+                        .with(EvidenceType.COOCCURRENCE, 443).with(EvidenceType.COEXPRESSION, 444).with(EvidenceType.TEXTMINING, 445).build()
         );
         assertEquals(5, rows.size());
         assertRowsEquals(
                 new RowBuilder()
-                        .withConfidence(1)
+                        .withConfidence(441)
                         .withDetectionMethod("MI:0057", "gene neighbourhood")
                         .withInteractionType("psi-mi", "MI:1110")
                         .withSourceDatabase("MI:1014", "string")
@@ -59,7 +59,7 @@ public class ConfidenceColumnBuilderTest {
         );
         assertRowsEquals(
                 new RowBuilder()
-                        .withConfidence(12)
+                        .withConfidence(442)
                         .withDetectionMethod("MI:0036", "domain fusion")
                         .withInteractionType("psi-mi", "MI:1110")
                         .withSourceDatabase("MI:1014", "string")
@@ -68,7 +68,7 @@ public class ConfidenceColumnBuilderTest {
         );
         assertRowsEquals(
                 new RowBuilder()
-                        .withConfidence(44)
+                        .withConfidence(443)
                         .withDetectionMethod("MI:0085", "phylogenetic profile")
                         .withInteractionType("psi-mi", "MI:1110")
                         .withSourceDatabase("MI:1014", "string")
@@ -77,7 +77,7 @@ public class ConfidenceColumnBuilderTest {
         );
         assertRowsEquals(
                 new RowBuilder()
-                        .withConfidence(33)
+                        .withConfidence(444)
                         .withDetectionMethod("MI:0686", "unspecified method - coexpression")
                         .withInteractionType("psi-mi", "MI:1110")
                         .withSourceDatabase("MI:1014", "string")
@@ -86,7 +86,7 @@ public class ConfidenceColumnBuilderTest {
         );
         assertRowsEquals(
                 new RowBuilder()
-                        .withConfidence(22)
+                        .withConfidence(445)
                         .withDetectionMethod("MI:0087", "predictive text mining")
                         .withInteractionType("psi-mi", "MI:1110")
                         .withSourceDatabase("MI:1014", "string")
@@ -104,12 +104,12 @@ public class ConfidenceColumnBuilderTest {
             }
         });
         Map<EvidenceType, RowBuilder> rows = confidenceExporter.buildRowForEachEvidenceType(
-                StringDbScores.builder(1, 2).with(EvidenceType.EXPERIMENTAL, 10).with(EvidenceType.DATABASE, 20).build()
+                StringDbScores.builder(1, 2).with(EvidenceType.EXPERIMENTAL, 444).with(EvidenceType.DATABASE, 445).build()
         );
         assertEquals(2, rows.size());
         assertRowsEquals(
                 new RowBuilder()
-                        .withConfidence(10)
+                        .withConfidence(444)
                         .withDetectionMethod("MI:0045", "experimental interaction detection")
                         .withInteractionType("psi-mi", "MI:0914")
                         .withSourceDatabase("MI:0463", "grid")
@@ -118,7 +118,7 @@ public class ConfidenceColumnBuilderTest {
         );
         assertRowsEquals(
                 new RowBuilder()
-                        .withConfidence(20)
+                        .withConfidence(445)
                         .withDetectionMethod("MI:0362", "inference")
                         .withInteractionType("psi-mi", "MI:1110")
                         .withSourceDatabase("MI:0463", "grid")
@@ -138,15 +138,15 @@ public class ConfidenceColumnBuilderTest {
         });
         Map<EvidenceType, RowBuilder> rows = confidenceExporter.buildRowForEachEvidenceType(
                 StringDbScores.builder(1, 2)
-                        .with(EvidenceType.NEIGHBOURHOOD_TRANSFERRED, 10)
-                        .with(EvidenceType.COEXPRESSION_TRANSFERRED, 20)
-                        .with(EvidenceType.EXPERIMENTAL_TRANSFERRED, 30)
-                        .with(EvidenceType.TEXTMINING_TRANSFERRED, 50).build()
+                        .with(EvidenceType.NEIGHBOURHOOD_TRANSFERRED, 410)
+                        .with(EvidenceType.COEXPRESSION_TRANSFERRED, 420)
+                        .with(EvidenceType.EXPERIMENTAL_TRANSFERRED, 430)
+                        .with(EvidenceType.TEXTMINING_TRANSFERRED, 450).build()
         );
         assertEquals("all transfer scores should be combined into one", 1, rows.size());
         assertRowsEquals(
                 new RowBuilder()
-                        .withConfidence(63)
+                        .withConfidence(792)
                         .withDetectionMethod("MI:0064", "interologs mapping")
                         .withInteractionType("psi-mi", "MI:1110")
                         .withSourceDatabase("MI:1014", "string")

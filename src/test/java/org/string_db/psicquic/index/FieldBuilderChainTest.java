@@ -25,7 +25,6 @@ import org.hupo.psi.calimocho.tab.util.Mitab25ColumnKeys;
 import org.hupo.psi.calimocho.tab.util.Mitab26ColumnKeys;
 import org.junit.Test;
 import org.string_db.ProteinExternalId;
-import org.string_db.UniprotAC;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -45,7 +44,7 @@ public class FieldBuilderChainTest {
                         975673, new ProteinExternalId("9606.ENSP00000000233"),
                         975854, new ProteinExternalId("9606.ENSP00000254584")
                 ),
-                ImmutableMap.of(975673, new UniprotAC("P84085"), 975854, new UniprotAC("Q15027"))
+                ImmutableMap.of(975673, "P84085", 975854, "Q15027")
         );
 
         //put something that doesn't subclass TwoProteinsFieldAppender

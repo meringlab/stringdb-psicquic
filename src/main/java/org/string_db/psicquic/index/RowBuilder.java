@@ -25,7 +25,6 @@ import org.hupo.psi.calimocho.model.Row;
 import org.hupo.psi.calimocho.tab.util.Mitab25ColumnKeys;
 import org.hupo.psi.calimocho.tab.util.Mitab26ColumnKeys;
 import org.string_db.ProteinExternalId;
-import org.string_db.UniprotAC;
 
 /**
  * A {@link Row} builder
@@ -62,8 +61,8 @@ public class RowBuilder {
      * @param uniprotkbId
      * @return
      */
-    public RowBuilder withIdA(UniprotAC uniprotkbId) {
-        return withIdA("uniprotkb", uniprotkbId.toString());
+    public RowBuilder withIdA(String uniprotkbId) {
+        return withIdA("uniprotkb", uniprotkbId);
     }
 
     /**
@@ -94,8 +93,8 @@ public class RowBuilder {
      * @param uniprotkbId
      * @return
      */
-    public RowBuilder withIdB(UniprotAC uniprotkbId) {
-        return withIdB("uniprotkb", uniprotkbId.toString());
+    public RowBuilder withIdB(String uniprotkbId) {
+        return withIdB("uniprotkb", uniprotkbId);
     }
 
     /**

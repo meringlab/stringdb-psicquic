@@ -27,7 +27,10 @@ import org.string_db.UniprotAC;
 import org.string_db.psicquic.AppProperties;
 import org.string_db.psicquic.SearchServer;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,9 +45,14 @@ public class StringdbSolrIndexer {
     private static final DbFacade db = new DbFacade(AppProperties.instance.getProteinRepository(),
             AppProperties.instance.getSpeciesRepository(),
             AppProperties.instance.getGenericQueryProcessor());
+    protected final Map<Integer, String> uniprotIds;
     protected final SearchServer searchServer;
 
-    public StringdbSolrIndexer(SearchServer searchServer) throws Exception {
+    public StringdbSolrIndexer(SearchServer searchServer, Map<Integer, UniprotAC> uniprotAcs) throws Exception {
+        this.uniprotIds = new HashMap<>();
+        for (Map.Entry<Integer, UniprotAC> e : uniprotAcs.entrySet()) {
+            this.uniprotIds.put(e.getKey(), e.getValue().toString());
+        }
         this.searchServer = searchServer;
         //        this shouldn't run if assertions are disabled: -disableassertions
         assert (indexDummyInteraction());
@@ -55,7 +63,8 @@ public class StringdbSolrIndexer {
         log.info("indexing to: " + AppProperties.instance.solrUrl);
         List<Integer> species = db.loadCoreSpecies();
         final SolrServerConnection solrServerConnection = new SolrServerConnection(AppProperties.instance.solrUrl);
-        final StringdbSolrIndexer indexer = new StringdbSolrIndexer(solrServerConnection);
+        final Map<Integer, UniprotAC> uniprotIds = new UniprotIdsLoader().loadUniprotIds(AppProperties.UNIPROT_IDS);
+        final StringdbSolrIndexer indexer = new StringdbSolrIndexer(solrServerConnection, uniprotIds);
         indexer.indexSpecies(species);
         log.info("indexing done in: " + ((System.currentTimeMillis() - start) / (1000 * 60)) + "min");
     }
@@ -68,7 +77,7 @@ public class StringdbSolrIndexer {
             log.info("indexing " + spcId + " (" + speciesIds.indexOf(spcId) + ". out of " + speciesIds.size() +
                     " in " + ((System.currentTimeMillis() - start) / (1000 * 60)) + "min)");
             long spc = System.currentTimeMillis();
-            Map<Integer, UniprotAC> uniprotIds = AppProperties.instance.getProteinRepository().loadUniqueUniProtIds(spcId);
+
             StringdbRowBuilder stringdbRowBuilder = StringdbRowBuilder.builder(db).build(spcId, uniprotIds);
             StringDbScoresDataReader scoresReader = new StringDbScoresDataReader(db, AppProperties.instance.getJdbcTemplate(), spcId);
             log.info("scores reader created, sending to solr...");
@@ -124,5 +133,31 @@ public class StringdbSolrIndexer {
             throw new ExceptionInInitializerError(e);
         }
     }
+}
+
+class UniprotIdsLoader {
+    private static final Logger log = Logger.getLogger(UniprotIdsLoader.class);
+
+    public Map<Integer, UniprotAC> loadUniprotIds(String file) {
+        Map<Integer, UniprotAC> map = new HashMap<Integer, UniprotAC>();
+        try {
+            BufferedReader r = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = r.readLine()) != null) {
+                try {
+                    String[] records = line.trim().split("\\s");
+                    map.put(Integer.valueOf(records[0]), new UniprotAC(records[1]));
+                } catch (Exception e) {
+                    log.warn("bad record: " + line);
+                }
+
+            }
+            r.close();
+        } catch (Exception e) {//Catch exception if any
+            throw new RuntimeException(e);
+        }
+        return map;
+    }
+
 }
 

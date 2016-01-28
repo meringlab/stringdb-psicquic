@@ -40,14 +40,13 @@ import java.util.Properties;
 public final class AppProperties {
 
     private static final Logger logger = LoggerFactory.getLogger(AppProperties.class);
-
-    private static final String CONFIG_DIR = "/opt/stringdb/v9.1/";
-
+    public static final String STRINGDB_VERSION = "v10.0";
+    public static final String BUILD_NUMBER = "0";
+    public static final String CONFIG_DIR = "/opt/stringdb/" + STRINGDB_VERSION + "/";
+    public static final String UNIPROT_IDS = CONFIG_DIR + "string.uniprot.ids.txt";
     public static final AppProperties instance = new AppProperties();
-
-    final ApplicationContext ctx;
-
     public final String solrUrl;
+    final ApplicationContext ctx;
 
     /**
      * Read all property files and fill in the fields
@@ -67,7 +66,6 @@ public final class AppProperties {
             throw new ExceptionInInitializerError("solr_url property missing!");
         }
         solrUrl = props.getProperty("solr_url");
-        logger.info("solr at: " + solrUrl);
 
         ctx = new AnnotationConfigApplicationContext(AppConfig.class, DriverDataSourceConfig.class);
     }

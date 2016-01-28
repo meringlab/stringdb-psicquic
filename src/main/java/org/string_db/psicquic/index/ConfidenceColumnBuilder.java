@@ -60,6 +60,7 @@ import static org.string_db.EvidenceType.*;
  * @see <a href='https://docs.google.com/document/pub?id=11HpddNs-Bt5a4KOPGCXWivJ4MROYFbY2nhpk4PkvbTA'>Data Distribution Best Practices</a>
  */
 class ConfidenceColumnBuilder {
+    public static final Set<Pair<String, String>> STRINGDB_SOURCE = ImmutableSet.of(new Pair<String, String>("MI:1014", "string"));
     static final Map<EvidenceType, Pair<String, String>> detectionType = new HashMap();
 
     static {
@@ -75,8 +76,6 @@ class ConfidenceColumnBuilder {
         detectionType.put(COMBINED_TRANSFERRED, new Pair("MI:0064", "interologs mapping"));
     }
 
-    public static final Set<Pair<String, String>> STRINGDB_SOURCE = ImmutableSet.of(new Pair<String, String>("MI:1014", "string"));
-
     private final SourceDbLookup sourceDbLookup;
 
     ConfidenceColumnBuilder(SourceDbLookup sourceDbLookup) {
@@ -87,7 +86,7 @@ class ConfidenceColumnBuilder {
         Map<EvidenceType, RowBuilder> result = new HashMap();
         for (EvidenceType evidenceType : detectionType.keySet()) {
             Integer score = getScore(scores, evidenceType);
-            if (isZero(score)) {
+            if (isZero(score) || score < StringDbScoresDataReader.MIN_SCORE) {
                 continue;
             }
             final RowBuilder builder = new RowBuilder()

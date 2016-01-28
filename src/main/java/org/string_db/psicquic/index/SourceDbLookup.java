@@ -48,9 +48,8 @@ import java.util.*;
  * @author Milan Simonovic <milan.simonovic@imls.uzh.ch>
  */
 class SourceDbLookup {
-    private static final Logger log = Logger.getLogger(SourceDbLookup.class);
-
     final static Map<String, Pair<String, String>> collections = new HashMap<String, Pair<String, String>>();
+    private static final Logger log = Logger.getLogger(SourceDbLookup.class);
 
     static {
         collections.put("bind", new Pair("MI:0462", "bind"));
@@ -66,6 +65,12 @@ class SourceDbLookup {
         collections.put("biocarta", new Pair("MI:1108", "biocarta"));
         collections.put("biocyc", new Pair("MI:1105", "biocyc"));
         collections.put("PID", new Pair("MI:1107", "pid"));
+        collections.put("gene_ontology", new Pair("MI:0448", "gene_ontology"));
+        collections.put("mpidb", new Pair("MI:0903", "mpidb"));
+        collections.put("rcsb_pdb", new Pair("MI:0460", "rcsb_pdb"));
+        collections.put("brenda", new Pair("MI:0846", "brenda"));
+        collections.put("interpro", new Pair("MI:0449", "interpro"));
+        collections.put("interPro", new Pair("MI:0449", "interpro"));
     }
 
 

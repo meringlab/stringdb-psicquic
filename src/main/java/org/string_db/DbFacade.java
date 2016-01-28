@@ -47,6 +47,10 @@ public class DbFacade {
         return speciesRepository.loadCoreSpeciesIds();
     }
 
+    public List<Integer> loadSpeciesIds() {
+        return speciesRepository.loadSpeciesIds();
+    }
+
     /**
      * evidence.sets_items table
      *
@@ -158,6 +162,16 @@ public class DbFacade {
             }
         }
         return names;
-
     }
+
+    public Map<Integer, Set<String>> loadUniProtLinkouts() {
+        log.info("loading UniProt ids");
+        Map<Integer, Set<String>> table =
+                queryProcessor.selectTwoColumns("protein_id", "linkout_url", "items.proteins_linkouts",
+                        TwoColumnRowMapper.<Integer, String>multiValMapper(),
+                        "linkout_type = 'UniProt'; ", null);
+        log.info(table.size() + " UniProt records read");
+        return table;
+    }
+
 }

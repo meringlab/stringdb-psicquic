@@ -38,7 +38,9 @@ import java.util.Map;
  * having to recompile?
  */
 class StringDbScoresDataReader implements DataReader<StringDbScores> {
-    static final int FETCH_SIZE = 1000;
+    static final Integer FETCH_SIZE = 1000;
+    static final Integer MIN_SCORE = 400;
+
     private static final Logger log = Logger.getLogger(StringDbScoresDataReader.class);
     final PreparedStatement preparedStatement;
     /**
@@ -47,7 +49,7 @@ class StringDbScoresDataReader implements DataReader<StringDbScores> {
      */
     private final String scoresQuery = "SELECT node_id_a, node_id_b, evidence_scores"
             + " FROM  network.node_node_links  "
-            + "  WHERE combined_score >= 400  "
+            + "  WHERE combined_score >= " + MIN_SCORE
         /*
          * this table is symmetrical but we only need one half since
          * psicquic will expand queries to both ids:

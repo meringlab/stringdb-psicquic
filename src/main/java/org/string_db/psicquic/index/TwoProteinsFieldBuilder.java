@@ -20,7 +20,6 @@ package org.string_db.psicquic.index;
 
 import org.apache.log4j.Logger;
 import org.string_db.ProteinExternalId;
-import org.string_db.UniprotAC;
 import uk.ac.ebi.intact.irefindex.seguid.RogidGenerator;
 import uk.ac.ebi.intact.irefindex.seguid.SeguidException;
 
@@ -99,15 +98,15 @@ abstract class TwoProteinsFieldBuilder extends FieldBuilder {
  */
 class IdsFieldBuilder extends TwoProteinsFieldBuilder {
     protected final Map<Integer, ProteinExternalId> proteins;
-    protected final Map<Integer, UniprotAC> uniprotids;
+    protected final Map<Integer, String> uniprotids;
 
-    IdsFieldBuilder(Map<Integer, ProteinExternalId> proteins, Map<Integer, UniprotAC> uniprotids, FieldBuilder next) {
+    IdsFieldBuilder(Map<Integer, ProteinExternalId> proteins, Map<Integer, String> uniprotids, FieldBuilder next) {
         super(next);
         this.proteins = proteins;
         this.uniprotids = uniprotids;
     }
 
-    IdsFieldBuilder(Map<Integer, ProteinExternalId> proteins, Map<Integer, UniprotAC> uniprotids) {
+    IdsFieldBuilder(Map<Integer, ProteinExternalId> proteins, Map<Integer, String> uniprotids) {
         this.proteins = proteins;
         this.uniprotids = uniprotids;
     }

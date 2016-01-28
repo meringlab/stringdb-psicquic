@@ -22,7 +22,6 @@ import com.google.common.collect.ImmutableMap;
 import org.hupo.psi.calimocho.model.Row;
 import org.junit.Test;
 import org.string_db.ProteinExternalId;
-import org.string_db.UniprotAC;
 
 import static org.string_db.psicquic.index.RowBuilderTest.assertRowsEquals;
 
@@ -36,11 +35,11 @@ public class IdsFieldApenderTest {
                     975673, new ProteinExternalId("9606.ENSP00000000233"),
                     975854, new ProteinExternalId("9606.ENSP00000254584")
             ),
-            ImmutableMap.of(975673, new UniprotAC("P84085"), 975854, new UniprotAC("Q15027"))
+            ImmutableMap.of(975673, "P84085", 975854, "Q15027")
     );
     final Row expected = new RowBuilder()
-            .withIdA(new ProteinExternalId("9606.ENSP00000000233")).withIdA(new UniprotAC("P84085"))
-            .withIdB(new ProteinExternalId("9606.ENSP00000254584")).withIdB(new UniprotAC("Q15027"))
+            .withIdA(new ProteinExternalId("9606.ENSP00000000233")).withIdA("P84085")
+            .withIdB(new ProteinExternalId("9606.ENSP00000254584")).withIdB("Q15027")
             .build();
     final RowBuilder recorder = new RowBuilder();
 

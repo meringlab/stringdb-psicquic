@@ -21,7 +21,6 @@ package org.string_db.psicquic.index;
 import org.hupo.psi.calimocho.model.Row;
 import org.string_db.DbFacade;
 import org.string_db.StringDbScores;
-import org.string_db.UniprotAC;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +72,7 @@ class StringdbRowBuilder {
          * @param uniprotIds
          * @return
          */
-        StringdbRowBuilder build(Integer speciesId, Map<Integer, UniprotAC> uniprotIds) {
+        StringdbRowBuilder build(Integer speciesId, Map<Integer, String> uniprotIds) {
             try {
                 Map<String, String> setsCollections = util.loadSetsCollections();
                 Map<Integer, Set<String>> proteinsSets = util.loadProteinsSets(speciesId);
