@@ -24,6 +24,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.string_db.DbFacade;
 import org.string_db.StringDbScores;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -62,6 +63,7 @@ class StringDbScoresDataReader implements DataReader<StringDbScores> {
      * safety guard: prevents lost and duplicate rows.
      * A row can be lost if {@link #next()} is called twice without calling {@link #get()} in between.
      * A duplicate row can be return if {@link #get()} is called twice without calling {@link #next()} in between.
+     * @see https://jdbc.postgresql.org/documentation/head/query.html#fetchsize-example
      */
     private boolean nextCalled;
 
@@ -70,8 +72,11 @@ class StringDbScoresDataReader implements DataReader<StringDbScores> {
         try {
             this.scoreTypes = dbFacade.loadScoreTypes();
             jdbcTemplate.setFetchSize(FETCH_SIZE);
-            preparedStatement = jdbcTemplate.getDataSource().getConnection().prepareStatement(scoresQuery + speciesId);
-
+            final Connection connection = jdbcTemplate.getDataSource().getConnection();
+            connection.setAutoCommit(false);
+            preparedStatement = connection.prepareStatement(scoresQuery + speciesId);
+            //setting fetchSize on jdbcTemplate doesn't work, must do it on the statement:
+            preparedStatement.setFetchSize(FETCH_SIZE);
 //            this.rs = jdbcTemplate.queryForRowSet(scoresQuery + speciesId);
             this.rs = preparedStatement.executeQuery();
             nextCalled = false;
