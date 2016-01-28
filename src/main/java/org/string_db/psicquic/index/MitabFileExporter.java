@@ -45,7 +45,7 @@ public class MitabFileExporter {
             appProperties.getSpeciesRepository(),
             appProperties.getGenericQueryProcessor());
     static final Logger log = Logger.getLogger(MitabFileExporter.class);
-    protected static String OUT_DIR = "target/mitab/";
+    protected static String OUT_DIR = "output/";
     protected final Map<Integer, String> uniprotIds;
 
     public MitabFileExporter() throws Exception {
