@@ -1,3 +1,6 @@
+# mitab files:
+output/*txt
+
 *.class
 
 # Mobile Tools for Java (J2ME)
