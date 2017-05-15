@@ -67,7 +67,7 @@ public class SourceDbLookupTest {
     public void testGetSourceDbs() throws Exception {
         final Set<Pair<String, String>> sourceDbs = cut.getSourceDbs(975673, 975854);
         Assert.assertEquals(2, sourceDbs.size());
-        assertTrue(sourceDbs.toString(), sourceDbs.contains(new Pair("MI:0463", "grid")));
+        assertTrue(sourceDbs.toString(), sourceDbs.contains(new Pair("MI:0463", "biogrid")));
         assertTrue(sourceDbs.toString(), sourceDbs.contains(new Pair("MI:0462", "bind")));
     }
 }
