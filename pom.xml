@@ -13,8 +13,8 @@
     </description>
 
     <scm>
-        <connection>scm:git:https://github.com/mbsimonovic/stringdb-psicquic.git</connection>
-        <url>https://github.com/mbsimonovic/stringdb-psicquic</url>
+        <connection>scm:git:https://github.com/meringlab/stringdb-psicquic.git</connection>
+        <url>https://github.com/meringlab/stringdb-psicquic</url>
     </scm>
 
     <organization>

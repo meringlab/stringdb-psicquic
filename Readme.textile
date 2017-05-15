@@ -2,17 +2,21 @@ h1. The official "string-db.org":http://string-db.org "PSICQUIC":http://www.natu
 
 h2. Important note
 
-The STRING-DB PSICQUIC API is not equivalent/compatible with the "STRING-DB's API":http://string-db.org/version_9_1/newstring_cgi/show_info_page.pl?page=api.html :
+The STRING-DB PSICQUIC API is  %{color:red}*not equivalent/compatible*% with the "STRING-DB's API":http://version10.string-db.org/help/api/ :
 * it provides just a subset of all data available (only the _core_ species - 417 out of 1133 in v9.1), and only interactions with score > 400 are indexed)
 * each STRING-DB evidence channel is reported as a separate interaction (homology excluded, all transferred combined into one)
 
 h2. How to setup development environment
 
-* get JDK 1.7 and "Maven 3":http://maven.apache.org
-* download the "string.uniprot.ids.txt.gz":http://string.uzh.ch/download/public/string_9_1/string.uniprot.ids.txt.gz and uncompress into @/opt/stringdb/v9.1/@
+* get JDK 1.7 (or newer) and "Maven 3":http://maven.apache.org
+* download the "string.uniprot.ids.txt.gz":http://string.uzh.ch/download/public/string_10_0/string.uniprot.ids.txt.gz and uncompress into @/opt/stringdb/v10.0/@
+* edit @docs/psicquic.properties.template@ and put under @/opt/stringdb/v10.0/psicquic.properties@, but make sure it's in sync with @psicquic-indexing-spring-test.xml@
 * edit @docs/jdbc-v1.0.properties.template@ and save at @/opt/stringdb/jdbc-v1.0.properties@
-* edit @docs/psicquic.properties.template@ and put under @/opt/stringdb/v9.1/psicquic.properties@, but make sure it's in sync with @psicquic-indexing-spring-test.xml@
 * run @mvn generate-sources@ and add target/generated/java as a source folder
+
+h3. To index (will take days to finish..)
+
+Run: @MAVEN_OPTS=" -Xmx2559m " mvn -PcreateIndexWithSolrRunning install@
 
 h3. To try locally
 
@@ -20,10 +24,6 @@ Run: @mvn -DskipTests=true -Pstart-jetty-solr package jetty:run@
 
 This will start jetty locally which can be accessed at
 "http://localhost:9090/psicquic/webservices/current/search/query/species:9606?firstResult=0&maxResults=10":http://localhost:9090/psicquic/webservices/current/search/query/species:9606?firstResult=0&maxResults=10
-
-h3. To index (will take days to finish..)
-
-Run: @MAVEN_OPTS=" -Xmx2559m " mvn -PcreateIndexWithSolrRunning install@
 
 
 h2. Mapping string-db data to PsiMitab
@@ -91,10 +91,6 @@ for all other channels: psi-mi:"MI:1014"(string) |
 | 39 & 40. Stoichiometry | - |
 | 41 & 42. Participant identification method| - |
 
-h2. TODO
-
-* 2014-05-13 12:30:19,459 [org.string_db.psicquic.index.StringdbSolrIndexer.main()] WARN  (SourceDbLookup,89) - no set for: 623803 633199
-
 
 h2. References
 
@@ -118,7 +114,7 @@ h1. License
 <pre>
 This software is licensed under the Apache 2 license, quoted below.
 
-Copyright 2014 University of Zürich, SIB, and others.
+Copyright 2017 University of Zürich, SIB, and others.
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not
 use this file except in compliance with the License. You may obtain a copy of

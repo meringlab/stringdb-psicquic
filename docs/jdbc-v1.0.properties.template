@@ -1,4 +1,4 @@
 jdbc.driver_class=org.postgresql.Driver
-jdbc.url=jdbc:postgresql://127.0.0.1:5432/string_9_1
+jdbc.url=jdbc:postgresql://127.0.0.1:5432/string_10_0
 jdbc.username=postgres
 jdbc.password=secret
