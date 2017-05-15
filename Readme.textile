@@ -9,10 +9,9 @@ The STRING-DB PSICQUIC API is  %{color:red}*not equivalent/compatible*% with the
 h2. How to setup development environment
 
 * get JDK 1.7 (or newer) and "Maven 3":http://maven.apache.org
-* ~~download the "string.uniprot.ids.txt.gz":http://string.uzh.ch/download/public/string_10_0/string.uniprot.ids.txt.gz and uncompress into @/opt/stringdb/v10.0/@~~
+* run @mvn generate-sources@ and add target/generated/java as a source folder
 * edit @docs/psicquic.properties.template@ and put under @/opt/stringdb/v10.0/psicquic.properties@, but make sure it's in sync with @psicquic-indexing-spring-test.xml@
 * edit @docs/jdbc-v1.0.properties.template@ and save at @/opt/stringdb/jdbc-v1.0.properties@
-* run @mvn generate-sources@ and add target/generated/java as a source folder
 
 h2. How to export MiTab files
 

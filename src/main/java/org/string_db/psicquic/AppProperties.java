@@ -43,7 +43,6 @@ public final class AppProperties {
     public static final String STRINGDB_VERSION = "v10.0";
     public static final String BUILD_NUMBER = "0";
     public static final String CONFIG_DIR = "/opt/stringdb/" + STRINGDB_VERSION + "/";
-    public static final String UNIPROT_IDS = CONFIG_DIR + "string.uniprot.ids.txt";
     public static final AppProperties instance = new AppProperties();
     public final String solrUrl;
     final ApplicationContext ctx;

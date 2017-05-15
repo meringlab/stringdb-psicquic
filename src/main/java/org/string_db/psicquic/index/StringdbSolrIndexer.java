@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Creates the PSICQUIC index based on the data from string-db: postgresql database + uniprot ids mapping list.
@@ -63,7 +64,13 @@ public class StringdbSolrIndexer {
         log.info("indexing to: " + AppProperties.instance.solrUrl);
         List<Integer> species = db.loadCoreSpecies();
         final SolrServerConnection solrServerConnection = new SolrServerConnection(AppProperties.instance.solrUrl);
-        final Map<Integer, UniprotAC> uniprotIds = new UniprotIdsLoader().loadUniprotIds(AppProperties.UNIPROT_IDS);
+
+        final Map<Integer, Set<String>> linkouts = db.loadUniProtLinkouts();
+        final Map<Integer, UniprotAC> uniprotIds = new HashMap((int) (linkouts.size() * 1.2));
+        for (Integer id : linkouts.keySet()) {
+            uniprotIds.put(id, new UniprotAC(linkouts.get(id).iterator().next()));
+        }
+
         final StringdbSolrIndexer indexer = new StringdbSolrIndexer(solrServerConnection, uniprotIds);
         indexer.indexSpecies(species);
         log.info("indexing done in: " + ((System.currentTimeMillis() - start) / (1000 * 60)) + "min");
