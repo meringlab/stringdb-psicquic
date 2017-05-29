@@ -35,7 +35,10 @@ import static org.junit.Assert.*;
  * @author Milan Simonovic <milan.simonovic@imls.uzh.ch>
  */
 public class DbFacadeITCase {
-    static final DbFacade dbUtil = new DbFacade(AppProperties.instance.getProteinRepository(), AppProperties.instance.getSpeciesRepository(), AppProperties.instance.getGenericQueryProcessor());
+    static final DbFacade dbUtil = new DbFacade(
+            AppProperties.instance.getProteinRepository(),
+            AppProperties.instance.getSpeciesRepository(),
+            AppProperties.instance.getGenericQueryProcessor());
 
     @Test
     public void test_speciesName() throws Exception {
@@ -51,24 +54,25 @@ public class DbFacadeITCase {
 
     @Test
     public void test_loadProteinExternalIds() throws Exception {
-        final Map<Integer, ProteinExternalId> externalIds = dbUtil.loadProteinExternalIds(272634);
-        assertTrue("Mycoplasma pneumoniae should have ~700 proteins " + externalIds.size(), externalIds.size() > 500);
-        assertEquals("272634.MPN665", externalIds.get(2815672).toString());
+        final Map<Integer, ProteinExternalId> externalIds = dbUtil.loadProteinExternalIds(882);
+        assertTrue("Desulfovibrio vulgaris  should have ~3000 proteins " + externalIds.size(), externalIds.size() > 3000);
+        assertEquals("882.DVU0847", externalIds.get(4466).toString());
     }
 
     @Test
     public void test_proteinsSets() throws Exception {
-        final Map<Integer, Set<String>> ids = dbUtil.loadProteinsSets(272634);
-        assertTrue("MPN665 should have > 60 sets " + ids.get(2815672).size(), ids.get(2815672).size() > 60);
-        assertTrue(ids.get(2815672).toString(), ids.get(2815672).contains("intact:EBI-2259080"));
-        assertTrue("M. pneumoniae should have ~400 proteins with sets" + ids.size(), ids.size() > 400);
+        final Map<Integer, Set<String>> ids = dbUtil.loadProteinsSets(882);
+        assertTrue("DVU0847 should have > 5 sets " + ids.get(4466).size(), ids.get(4466).size() > 5);
+        assertTrue(ids.get(4466).toString(), ids.get(4466).contains("intact:EBI-11760304"));
+        assertTrue("d.vulgaris should have >1000 proteins with sets" + ids.size(), ids.size() > 1000);
     }
 
     @Test
     public void test_refseqIds() throws Exception {
-        final Map<Integer, Set<String>> ids = dbUtil.loadRefseqIds(272634);
-        assertTrue(ids.get(2815672).toString(), ids.get(2815672).contains("MPN665"));
-        assertTrue("Mycoplasma pneumoniae should have ~700 proteins " + ids.size(), ids.size() > 500);
+        final Map<Integer, Set<String>> ids = dbUtil.loadRefseqIds(882);
+//        assertTrue(ids.get(4466).toString(), ids.get(4466).contains("aprA"));
+        assertTrue(ids.get(4466).toString(), ids.get(4466).contains("DVU0847"));
+        assertTrue("d.vulgaris should have >2000 proteins " + ids.size(), ids.size() > 2000);
     }
 
     @Ignore
