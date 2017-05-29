@@ -8,7 +8,7 @@
     <version>2.1</version>
     <name>stringdb psicquic</name>
     <url>http://string-db.org/psicquic/</url>
-    <description>http://string-db.org v9.0 PSICQUIC Reference WS Implementation,
+    <description>http://string-db.org v10.5 PSICQUIC Reference WS Implementation,
         based on org.hupo.psi.mi.psicquic::psicquic-solr::1.2.3
     </description>
 
