@@ -1,14 +1,14 @@
 /**
  * Copyright 2014 University of Zürich, SIB, and others.
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. The ASF licenses this file
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,11 +36,30 @@ public class DbFacade {
     protected final ProteinRepository proteinRepository;
     protected final SpeciesRepository speciesRepository;
     protected final GenericQueryProcessor queryProcessor;
+    protected final Map<String, String> scoreTypeMap = new HashMap<>();
 
     public DbFacade(ProteinRepository proteinRepository, SpeciesRepository speciesRepository, GenericQueryProcessor queryProcessor) {
         this.proteinRepository = proteinRepository;
         this.speciesRepository = speciesRepository;
         this.queryProcessor = queryProcessor;
+
+        scoreTypeMap.put("equiv_nscore", "neighbourhood");
+        scoreTypeMap.put("equiv_nscore_transferred", "neighbourhood_transferred");
+        scoreTypeMap.put("equiv_fscore", "fusion");
+        scoreTypeMap.put("equiv_pscore", "cooccurrence");
+        scoreTypeMap.put("equiv_hscore", "homology");
+        scoreTypeMap.put("array_score", "coexpression");
+        scoreTypeMap.put("array_score_transferred", "coexpression_transferred");
+        scoreTypeMap.put("experimental_score", "experimental");
+        scoreTypeMap.put("experimental_score_transferred", "experimental_transferred");
+        scoreTypeMap.put("database_score", "database");
+        scoreTypeMap.put("database_score_transferred", "database_transferred");
+        scoreTypeMap.put("textmining_score", "textmining");
+        scoreTypeMap.put("textmining_score_transferred", "textmining_transferred");
+        scoreTypeMap.put("neighborhood_score", "neighborhood");
+        scoreTypeMap.put("fusion_score", "fusion");
+        scoreTypeMap.put("cooccurence_score", "cooccurence");
+
     }
 
     public List<Integer> loadCoreSpecies() {
@@ -68,9 +87,19 @@ public class DbFacade {
         return map;
     }
 
+
     public Map<Integer, String> loadScoreTypes() throws SQLException {
-        return queryProcessor.selectTwoColumns("score_id", "score_type", "network.score_types_user_friendly",
+        final Map<Integer, String> crypticTypes = queryProcessor.selectTwoColumns("score_id", "score_type", "network.score_types",
                 TwoColumnRowMapper.<Integer, String>uniqueValMapper());
+        Map<Integer, String> types = new LinkedHashMap<>();
+        for (Integer id : crypticTypes.keySet()) {
+            final String crypticType = crypticTypes.get(id);
+            if (!this.scoreTypeMap.containsKey(crypticType))  {
+                throw new RuntimeException("missing score type: " + crypticType);
+            }
+            types.put(id, this.scoreTypeMap.get(crypticType));
+        }
+        return types;
     }
 
     /**
