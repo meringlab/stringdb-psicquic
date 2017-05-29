@@ -40,7 +40,7 @@ import java.util.Properties;
 public final class AppProperties {
 
     private static final Logger logger = LoggerFactory.getLogger(AppProperties.class);
-    public static final String STRINGDB_VERSION = "v10.0";
+    public static final String STRINGDB_VERSION = "v10.5";
     public static final String BUILD_NUMBER = "0";
     public static final String CONFIG_DIR = "/opt/stringdb/" + STRINGDB_VERSION + "/";
     public static final AppProperties instance = new AppProperties();
