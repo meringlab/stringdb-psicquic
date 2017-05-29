@@ -24,10 +24,7 @@ import org.hupo.psi.mi.psicquic.indexing.batch.SolrMitabIndexer;
 import org.hupo.psi.mi.psicquic.model.server.SolrJettyRunner;
 import org.hupo.psi.mi.psicquic.ws.utils.PsicquicStreamingOutput;
 import org.hupo.psi.mi.psicquic.ws.utils.XgmmlStreamingOutput;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.string_db.psicquic.ws.StringdbSolrBasedPsicquicRestService;
 import psidev.psi.mi.xml254.jaxb.EntrySet;
@@ -35,6 +32,7 @@ import psidev.psi.mi.xml254.jaxb.EntrySet;
 import javax.ws.rs.core.GenericEntity;
 import java.io.ByteArrayOutputStream;
 
+@Ignore
 public class StringdbSolrBasedPsicquicRestServiceITCase {
 
     private static StringdbSolrBasedPsicquicRestService service;
