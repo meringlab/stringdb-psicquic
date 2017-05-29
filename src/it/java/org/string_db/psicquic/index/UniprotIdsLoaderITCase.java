@@ -34,10 +34,12 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author Milan Simonovic <milan.simonovic@imls.uzh.ch>
  */
+@Ignore //this is outdated as of v10_5, must update stringdb-jdbc for the schema changes (items.proteins_names linkout->source)
 public class UniprotIdsLoaderITCase {
     static JdbcTemplate db = AppProperties.instance.getJdbcTemplate();
     static ProteinRepository repo = AppProperties.instance.getProteinRepository();
     private static final DbFacade dbUtil = DbFacadeITCase.dbUtil;
+
     @Test
     public void test_load() throws Exception {
         final Map<Integer, UniprotAC> ids = repo.loadUniqueUniProtIds(511145);
@@ -76,10 +78,10 @@ and linkout = 'UniProt'));
          */
         for (Integer spcId : dbUtil.loadCoreSpecies()) {
             final Integer totalNames = db.queryForObject("SELECT COUNT(*) FROM items.proteins_names " +
-                    " WHERE linkout = 'UniProt' \n" +
+                    " WHERE source = 'UniProt' \n" +
                     " and species_id = " + spcId, Integer.class);
             final Integer uniqueNames = db.queryForObject("SELECT COUNT(DISTINCT(protein_id)) FROM items.proteins_names " +
-                    " WHERE linkout = 'UniProt' \n" +
+                    " WHERE source = 'UniProt' \n" +
                     " and species_id = " + spcId, Integer.class);
             if (!totalNames.equals(uniqueNames)) {
                 System.err.println(spcId + " doesn't have unique string_id <-> UniProt_id mapping: " + totalNames + " vs. " + uniqueNames);
