@@ -1,5 +1,5 @@
 # mitab files:
-output/*txt
+output/
 
 *.class
 
