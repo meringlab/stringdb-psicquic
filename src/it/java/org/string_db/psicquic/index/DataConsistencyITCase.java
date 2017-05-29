@@ -35,6 +35,9 @@ public class DataConsistencyITCase {
     public void test_if_all_collection_ids_are_mapped() throws Exception {
         final List<String> collections = db.queryForList("SELECT DISTINCT (collection_id) FROM evidence.sets", String.class);
         collections.removeAll(SourceDbLookup.collections.keySet());
+
+        collections.remove("proteomexchange"); //exception
+
         if (!collections.isEmpty()) {
             Assert.fail("not all collections are mapped: " + collections);
         }
